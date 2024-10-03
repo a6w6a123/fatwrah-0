@@ -110,12 +110,12 @@
         <p id="totalPrice"></p>
 
         <div class="qr-code">
-            <h4>QR Code للفاتورة:</h4>
+            <h4>:</h4>
             <div id="qrcode"></div>
         </div>
 
         <div class="barcode">
-            <h4>باركود الفاتورة:</h4>
+            <h4>:</h4>
             <svg id="barcode"></svg> <!-- إضافة عنصر SVG لعرض الباركود -->
         </div>
 
@@ -147,7 +147,7 @@
                 document.getElementById('totalPrice').innerText = `${totalPrice} ريال`;
 
                 // إنشاء QR Code للفاتورة
-                const qrcode = new QRCode(document.getElementById("qrcode"), {
+                const qrcode = new QRCode(document.getElementById(), {
                     text: JSON.stringify(invoice), // نص كود QR
                     width: 128,
                     height: 128,
