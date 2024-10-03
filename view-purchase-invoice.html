@@ -46,27 +46,20 @@
             font-size: 18px;
             text-align: center;
         }
-        .print-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #007BFF;
+        .tag {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 2px;
+            background-color: #4CAF50;
             color: white;
-            border: none;
             border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-        }
-        .print-button:hover {
-            background-color: #0056b3;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-<h1>عرض فواتير المشتريات</h1>
-
-<button class="print-button" onclick="printPage()">طباعة الفواتير</button>
+<h1>عرض فواتير المشتريات الشهرية</h1>
 
 <select id="monthFilter" onchange="filterInvoices()">
     <option value="">اختر شهر</option>
@@ -84,6 +77,8 @@
     <option value="12">ديسمبر</option>
 </select>
 
+<button onclick="printInvoices()">طباعة</button>
+
 <table>
     <thead>
         <tr>
@@ -91,8 +86,8 @@
             <th>اسم العميل</th>
             <th>تاريخ البداية</th>
             <th>تاريخ النهاية</th>
+            <th>اسم المنتج</th>
             <th>إجمالي السعر</th>
-            <th>المنتجات</th>
             <th>العمليات</th>
         </tr>
     </thead>
@@ -102,6 +97,11 @@
 </table>
 
 <div class="total" id="totalInvoices">إجمالي الفواتير: 0 ريال</div>
+
+<!-- زر العودة للرئيسية -->
+<div style="text-align: center; margin-top: 20px;">
+    <button onclick="goToHomePage()">عودة للرئيسية</button>
+</div>
 
 <script>
     let invoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
@@ -127,14 +127,14 @@
                 month: '2-digit',
                 day: '2-digit'
             });
-
             const formattedEndDate = endDate.toLocaleDateString('ar-EG', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit'
             });
 
-            const productDetails = invoice.products.map(product => `${product.name} - ${product.price} ريال`).join('<br>');
+            // عرض أسماء المنتجات كـ تاجز
+            const productTags = invoice.products.map(product => `<span class="tag">${product.name}</span>`).join(' ');
 
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -142,8 +142,8 @@
                 <td>${invoice.clientName}</td>
                 <td>${formattedStartDate}</td>
                 <td>${formattedEndDate}</td>
+                <td>${productTags}</td>
                 <td>${invoiceTotal} ريال</td>
-                <td>${productDetails}</td>
                 <td>
                     <button onclick="viewInvoice(${index})">عرض</button>
                     <button onclick="editInvoice(${index})">تعديل</button>
@@ -170,7 +170,9 @@
 
     // دالة لتعديل الفاتورة
     function editInvoice(index) {
-        alert(`تعديل الفاتورة: ${filteredInvoices[index].invoiceTitle}`);
+        const invoice = filteredInvoices[index];
+        localStorage.setItem('currentInvoice', JSON.stringify(invoice)); // تخزين الفاتورة المختارة
+        window.location.href = 'edit-invoice.html'; // الانتقال إلى صفحة التعديل
     }
 
     // دالة لحذف الفاتورة
@@ -182,13 +184,13 @@
         }
     }
 
-    // دالة لتصفية الفواتير حسب الشهر
+    // دالة لتصفية الفواتير حسب شهر تاريخ البداية
     function filterInvoices() {
         const month = document.getElementById('monthFilter').value;
         if (month) {
             filteredInvoices = invoices.filter(invoice => {
-                const invoiceStartDate = new Date(invoice.startDate); // تأكد من وجود تاريخ البداية
-                return invoiceStartDate.getMonth() + 1 == month;
+                const startDate = new Date(invoice.startDate); // استخدام تاريخ البداية
+                return startDate.getMonth() + 1 == month; // هنا +1 لأن الشهور تبدأ من 0
             });
         } else {
             filteredInvoices = invoices;
@@ -196,16 +198,22 @@
         displayInvoices();
     }
 
-    // دالة لطباعة الصفحة
-    function printPage() {
-        // إخفاء الأزرار
+    // دالة لطباعة الفواتير
+    function printInvoices() {
         const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => button.style.display = 'none');
-        
-        window.print();
+        buttons.forEach(button => button.style.display = 'none'); // إخفاء الأزرار
 
-        // إظهار الأزرار مرة أخرى بعد الطباعة
-        buttons.forEach(button => button.style.display = 'inline-block');
+        window.print(); // بدء عملية الطباعة
+
+        // بعد الطباعة، إعادة عرض الأزرار
+        setTimeout(() => {
+            buttons.forEach(button => button.style.display = 'block');
+        }, 1000);
+    }
+
+    // دالة للعودة للرئيسية
+    function goToHomePage() {
+        window.location.href = 'index.html'; // تأكد من تعديل هذا الرابط ليعكس اسم الصفحة الرئيسية لديك
     }
 
     // استدعاء دالة عرض الفواتير عند تحميل الصفحة
