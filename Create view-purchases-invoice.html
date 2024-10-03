@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض فواتير المشتريات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            background-color: #f5f5f5;
+            padding: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>عرض فواتير المشتريات</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>رقم الفاتورة</th>
+                <th>اسم العميل</th>
+                <th>عنوان الفاتورة</th>
+                <th>تاريخ الفاتورة</th>
+                <th>إجمالي السعر</th>
+                <th>عرض</th>
+                <th>حذف</th>
+            </tr>
+        </thead>
+        <tbody id="invoiceTableBody">
+            <!-- الفواتير سيتم عرضها هنا -->
+        </tbody>
+    </table>
+
+    <script>
+        function loadPurchaseInvoices() {
+            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            const tableBody = document.getElementById('invoiceTableBody');
+
+            if (purchaseInvoices.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="7">لا توجد فواتير محفوظة</td></tr>';
+            } else {
+                tableBody.innerHTML = ''; // مسح المحتوى الحالي
+
+                purchaseInvoices.forEach((invoice, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${invoice.clientName}</td>
+                        <td>${invoice.invoiceTitle}</td>
+                        <td>${invoice.startDate}</td>
+                        <td>${invoice.totalPrice} ريال</td>
+                        <td><button onclick="viewInvoice(${index})">عرض</button></td>
+                        <td><button onclick="deleteInvoice(${index})">حذف</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        }
+
+        function viewInvoice(index) {
+            window.location.href = `invoice.html?invoiceIndex=${index}`;
+        }
+
+        function deleteInvoice(index) {
+            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            purchaseInvoices.splice(index, 1);
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+            loadPurchaseInvoices(); // إعادة تحميل الفواتير
+        }
+
+        window.onload = loadPurchaseInvoices;
+    </script>
+
+</body>
+</html>
