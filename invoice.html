@@ -66,9 +66,14 @@
             text-align: center;
             margin: 20px 0;
         }
+        .barcode {
+            text-align: center;
+            margin: 20px 0;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.0/JsBarcode.all.min.js"></script>
 </head>
 <body>
 
@@ -109,6 +114,11 @@
             <div id="qrcode"></div>
         </div>
 
+        <div class="barcode">
+            <h4>باركود الفاتورة:</h4>
+            <svg id="barcode"></svg> <!-- إضافة عنصر SVG لعرض الباركود -->
+        </div>
+
         <button id="printButton" onclick="printInvoice()">طباعة الفاتورة</button>
     </div>
 
@@ -142,8 +152,26 @@
                     width: 128,
                     height: 128,
                 });
+
+                // إنشاء باركود عشوائي للفاتورة
+                const randomBarcodeValue = generateRandomBarcode();
+                JsBarcode("#barcode", randomBarcodeValue, {
+                    format: "CODE128",
+                    displayValue: true,
+                    width: 2,
+                    height: 40,
+                });
+
+                // تخزين الباركود في الفاتورة
+                invoice.barcode = randomBarcodeValue;
+                localStorage.setItem('currentInvoice', JSON.stringify(invoice));
             }
         };
+
+        // دالة لإنشاء باركود عشوائي
+        function generateRandomBarcode() {
+            return Math.random().toString(36).substring(2, 10).toUpperCase(); // إنشاء سلسلة عشوائية
+        }
 
         // دالة لطباعة الفاتورة
         function printInvoice() {
