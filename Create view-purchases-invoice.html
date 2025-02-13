@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عرض فواتير المشتريات</title>
+    <title>عرض وإنشاء فواتير المشتريات</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,22 +37,176 @@
         button:hover {
             background-color: #45a049;
         }
+        .invoice-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .invoice-form input, .invoice-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .product-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .simple-invoice-form {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            max-width: 500px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        .simple-invoice-form input, 
+        .simple-invoice-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .simple-invoice-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .simple-invoice-form button:hover {
+            background-color: #45a049;
+        }
+        .comprehensive-invoice-form {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 700px;
+            margin: 20px auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .comprehensive-invoice-form .form-group {
+            margin-bottom: 15px;
+        }
+        .comprehensive-invoice-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .comprehensive-invoice-form input, 
+        .comprehensive-invoice-form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .products-section {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .product-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .product-row input {
+            flex: 1;
+        }
+        .product-row .remove-product {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .total-price {
+            text-align: left;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        .save-invoice-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
-    <h1>عرض فواتير المشتريات</h1>
+    <h1>عرض وإنشاء فواتير المشتريات</h1>
+
+
+
+    <div class="comprehensive-invoice-form">
+        <h2>إنشاء فاتورة جديدة</h2>
+        <form id="comprehensiveInvoiceForm">
+            <div class="form-group">
+                <label for="invoiceNumber">رقم الفاتورة</label>
+                <input type="text" id="invoiceNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="invoiceTitle">عنوان الفاتورة</label>
+                <input type="text" id="invoiceTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label for="clientName">اسم العميل</label>
+                <input type="text" id="clientName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="startDate">تاريخ البداية</label>
+                <input type="date" id="startDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="endDate">تاريخ النهاية</label>
+                <input type="date" id="endDate" required>
+            </div>
+
+            <div class="products-section">
+                <h3>المنتجات</h3>
+                <div id="productContainer">
+                    <div class="product-row">
+                        <input type="text" class="product-name" placeholder="اسم المنتج" required>
+                        <input type="number" class="product-price" placeholder="السعر" step="0.01" required>
+                        <input type="number" class="product-quantity" placeholder="الكمية" required>
+                    </div>
+                </div>
+                <button type="button" onclick="addProductRow()">إضافة منتج</button>
+                <div class="total-price">
+                    إجمالي السعر: <span id="totalPrice">0.00</span> ريال
+                </div>
+            </div>
+
+            <button type="button" class="save-invoice-btn" onclick="saveComprehensiveInvoice()">حفظ الفاتورة</button>
+        </form>
+    </div>
 
     <table>
         <thead>
             <tr>
-                <th>رقم الفاتورة</th>
-                <th>اسم العميل</th>
-                <th>عنوان الفاتورة</th>
-                <th>تاريخ الفاتورة</th>
-                <th>إجمالي السعر</th>
-                <th>عرض</th>
-                <th>حذف</th>
+
             </tr>
         </thead>
         <tbody id="invoiceTableBody">
@@ -97,7 +251,214 @@
             loadPurchaseInvoices(); // إعادة تحميل الفواتير
         }
 
-        window.onload = loadPurchaseInvoices;
+        function addProductRow() {
+            const container = document.getElementById('productContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'product-row';
+            newRow.innerHTML = `
+                <input type="text" class="product-name" placeholder="اسم المنتج" required>
+                <input type="number" class="product-price" placeholder="السعر" step="0.01" required>
+                <input type="number" class="product-quantity" placeholder="الكمية" required>
+                <button type="button" onclick="this.closest('.product-row').remove(); updateTotalPrice()">حذف</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function updateTotalPrice() {
+            const productRows = document.querySelectorAll('.product-row');
+            let total = 0;
+            productRows.forEach(row => {
+                const price = parseFloat(row.querySelector('.product-price').value) || 0;
+                const quantity = parseInt(row.querySelector('.product-quantity').value) || 0;
+                total += price * quantity;
+            });
+            document.getElementById('totalPrice').textContent = `إجمالي السعر: ${total.toFixed(2)} ريال`;
+        }
+
+        function saveInvoice() {
+            const invoiceTitle = document.getElementById('invoiceTitle').value;
+            const clientName = document.getElementById('clientName').value;
+            const invoiceDate = document.getElementById('invoiceDate').value;
+            
+            const productRows = document.querySelectorAll('.product-row');
+            const products = [];
+            let totalPrice = 0;
+
+            productRows.forEach(row => {
+                const name = row.querySelector('.product-name').value;
+                const price = parseFloat(row.querySelector('.product-price').value);
+                const quantity = parseInt(row.querySelector('.product-quantity').value);
+                
+                const productTotal = price * quantity;
+                totalPrice += productTotal;
+
+                products.push({ name, price, quantity, productTotal });
+            });
+
+            const newInvoice = {
+                invoiceTitle,
+                clientName,
+                startDate: invoiceDate,
+                products,
+                totalPrice
+            };
+
+            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            purchaseInvoices.push(newInvoice);
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+
+            // Reset form and reload invoices
+            document.getElementById('newInvoiceForm').reset();
+            document.getElementById('productContainer').innerHTML = `
+                <div class="product-row">
+                    <input type="text" class="product-name" placeholder="اسم المنتج" required>
+                    <input type="number" class="product-price" placeholder="السعر" step="0.01" required>
+                    <input type="number" class="product-quantity" placeholder="الكمية" required>
+                </div>
+            `;
+            document.getElementById('totalPrice').textContent = 'إجمالي السعر: 0.00 ريال';
+            loadPurchaseInvoices();
+        }
+
+        function saveSimpleInvoice() {
+            const invoiceTitle = document.getElementById('simpleInvoiceTitle').value;
+            const clientName = document.getElementById('simpleClientName').value;
+            const invoiceDate = document.getElementById('simpleInvoiceDate').value;
+            const invoiceAmount = parseFloat(document.getElementById('simpleInvoiceAmount').value);
+            const invoiceType = document.getElementById('simpleInvoiceType').value;
+
+            // Basic validation
+            if (!invoiceTitle || !clientName || !invoiceDate || !invoiceAmount || !invoiceType) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+
+            const newInvoice = {
+                invoiceTitle,
+                clientName,
+                startDate: invoiceDate,
+                totalPrice: invoiceAmount,
+                invoiceType,
+                createdAt: new Date().toISOString()
+            };
+
+            // Retrieve existing invoices or initialize empty array
+            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            
+            // Add new invoice
+            purchaseInvoices.push(newInvoice);
+            
+            // Save updated invoices
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+
+            // Reset form
+            document.getElementById('simpleInvoiceForm').reset();
+
+            // Optional: Show success message
+            alert('تم حفظ الفاتورة بنجاح');
+        }
+
+        function addProductRowComprehensive() {
+            const container = document.getElementById('productContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'product-row';
+            newRow.innerHTML = `
+                <input type="text" class="product-name" placeholder="اسم المنتج" required>
+                <input type="number" class="product-price" placeholder="السعر" step="0.01" required>
+                <input type="number" class="product-quantity" placeholder="الكمية" required>
+                <button type="button" class="remove-product" onclick="removeProductRow(this)">حذف</button>
+            `;
+            container.appendChild(newRow);
+            updateTotalPriceComprehensive();
+        }
+
+        function removeProductRow(button) {
+            button.closest('.product-row').remove();
+            updateTotalPriceComprehensive();
+        }
+
+        function updateTotalPriceComprehensive() {
+            const productRows = document.querySelectorAll('.product-row');
+            let total = 0;
+            
+            productRows.forEach(row => {
+                const price = parseFloat(row.querySelector('.product-price').value) || 0;
+                const quantity = parseInt(row.querySelector('.product-quantity').value) || 0;
+                total += price * quantity;
+            });
+            
+            document.getElementById('totalPrice').textContent = total.toFixed(2);
+        }
+
+        function saveComprehensiveInvoice() {
+            // Collect basic invoice details
+            const invoiceNumber = document.getElementById('invoiceNumber').value;
+            const invoiceTitle = document.getElementById('invoiceTitle').value;
+            const clientName = document.getElementById('clientName').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            // Validate basic details
+            if (!invoiceNumber || !invoiceTitle || !clientName || !startDate || !endDate) {
+                alert('يرجى ملء جميع الحقول الأساسية');
+                return;
+            }
+
+            // Collect products
+            const productRows = document.querySelectorAll('.product-row');
+            const products = [];
+            let totalPrice = 0;
+
+            productRows.forEach(row => {
+                const name = row.querySelector('.product-name').value.trim();
+                const price = parseFloat(row.querySelector('.product-price').value);
+                const quantity = parseInt(row.querySelector('.product-quantity').value);
+
+                if (!name || isNaN(price) || isNaN(quantity)) {
+                    alert('يرجى التأكد من إدخال بيانات المنتجات بشكل صحيح');
+                    return;
+                }
+
+                const productTotal = price * quantity;
+                totalPrice += productTotal;
+
+                products.push({ name, price, quantity, productTotal });
+            });
+
+            // Create invoice object
+            const newInvoice = {
+                invoiceNumber,
+                invoiceTitle,
+                clientName,
+                startDate,
+                endDate,
+                products,
+                totalPrice,
+                createdAt: new Date().toISOString()
+            };
+
+            // Save to localStorage
+            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            purchaseInvoices.push(newInvoice);
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+
+            // Reset form
+            document.getElementById('comprehensiveInvoiceForm').reset();
+            document.getElementById('productContainer').innerHTML = `
+                <div class="product-row">
+                    <input type="text" class="product-name" placeholder="اسم المنتج" required>
+                    <input type="number" class="product-price" placeholder="السعر" step="0.01" required>
+                    <input type="number" class="product-quantity" placeholder="الكمية" required>
+                </div>
+            `;
+            document.getElementById('totalPrice').textContent = '0.00';
+
+            // Show success message
+            alert('تم حفظ الفاتورة بنجاح');
+        }
+
+        // Add event listener for dynamic price updates
+        document.getElementById('productContainer').addEventListener('input', updateTotalPriceComprehensive);
     </script>
 
 </body>
