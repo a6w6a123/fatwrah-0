@@ -4,56 +4,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عرض فواتير المشتريات</title>
+    <link rel="stylesheet" href="global-styles.css">
     <style>
+        /* تحسين وضوح النص */
         body {
-            font-family: Arial, sans-serif;
-            direction: rtl;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Cairo', Arial, sans-serif;
+            color: #2c3e50;
+            line-height: 1.6;
+            background-color: #f4f6f8;
         }
+
         h1 {
+            color: #2c3e50;
             text-align: center;
-            color: #4CAF50;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 24px;
         }
+
         table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background-color: #4CAF50;
+
+        table th {
+            background-color: #3498db;
             color: white;
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+            font-size: 16px;
         }
-        button {
-            padding: 5px 10px;
-            margin: 2px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: right;
+            color: #2c3e50;
+            font-size: 14px;
         }
-        button:hover {
-            background-color: #45a049;
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
-        .total {
-            margin-top: 20px;
-            font-size: 18px;
-            text-align: center;
+
+        table tr:hover {
+            background-color: #f1f1f1;
         }
+
         .tag {
             display: inline-block;
             padding: 5px 10px;
             margin: 2px;
-            background-color: #4CAF50;
+            background-color: #3498db;
             color: white;
-            border-radius: 5px;
+            border-radius: 15px;
             font-size: 14px;
+            font-weight: normal;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #totalInvoices {
+            text-align: left;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        /* تحسين تباين الألوان للنص */
+        .invoice-number {
+            color: #2980b9;
+            font-weight: bold;
+        }
+
+        .invoice-title {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .invoice-client {
+            color: #2ecc71;
+        }
+
+        .invoice-date {
+            color: #27ae60;
+        }
+
+        .invoice-total {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        /* أنماط الطباعة */
+        @media print {
+            body {
+                font-size: 10pt;
+            }
+            
+            select, 
+            button, 
+            .no-print {
+                display: none !important;
+            }
+            
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                page-break-inside: avoid;
+            }
+            
+            table, 
+            table th, 
+            table td {
+                border: 1px solid #000;
+                padding: 5px;
+            }
+            
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+        }
+
+        /* تحسين نموذج إنشاء الفاتورة */
+        .create-invoice-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .create-invoice-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .create-invoice-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .create-invoice-form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .create-invoice-form input, 
+        .create-invoice-form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .product-table {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .product-table th, 
+        .product-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: right;
+        }
+
+        .btn-add-product, 
+        .btn-remove-product {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-remove-product {
+            background-color: #e74c3c;
+        }
+
+        .total-price {
+            text-align: left;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        /* تحسين عرض الفواتير */
+        .invoice-details-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: auto;
+        }
+
+        .invoice-details-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .invoice-details-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .invoice-details-products {
+            grid-column: 1 / -1;
+        }
+
+        .invoice-details-products table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-details-products th, 
+        .invoice-details-products td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: right;
         }
     </style>
 </head>
@@ -61,42 +287,166 @@
 
 <h1>عرض فواتير المشتريات الشهرية</h1>
 
-<select id="monthFilter" onchange="filterInvoices()">
-    <option value="">اختر شهر</option>
-    <option value="1">يناير</option>
-    <option value="2">فبراير</option>
-    <option value="3">مارس</option>
-    <option value="4">أبريل</option>
-    <option value="5">مايو</option>
-    <option value="6">يونيو</option>
-    <option value="7">يوليو</option>
-    <option value="8">أغسطس</option>
-    <option value="9">سبتمبر</option>
-    <option value="10">أكتوبر</option>
-    <option value="11">نوفمبر</option>
-    <option value="12">ديسمبر</option>
-</select>
+<div class="invoice-filters no-print">
+    <select id="monthFilter" onchange="filterInvoices()">
+        <option value="">اختر شهر</option>
+        <option value="1">يناير</option>
+        <option value="2">فبراير</option>
+        <option value="3">مارس</option>
+        <option value="4">أبريل</option>
+        <option value="5">مايو</option>
+        <option value="6">يونيو</option>
+        <option value="7">يوليو</option>
+        <option value="8">أغسطس</option>
+        <option value="9">سبتمبر</option>
+        <option value="10">أكتوبر</option>
+        <option value="11">نوفمبر</option>
+        <option value="12">ديسمبر</option>
+    </select>
+</div>
 
-<button onclick="printInvoices()">طباعة</button>
+<div class="invoice-actions no-print">
+    <button onclick="printInvoices()">طباعة</button>
+    <button onclick="openCreateInvoiceModal()">إنشاء فاتورة جديدة</button>
+</div>
 
 <table>
     <thead>
         <tr>
+            <th>رقم الفاتورة</th>
             <th>عنوان الفاتورة</th>
             <th>اسم العميل</th>
             <th>تاريخ البداية</th>
-            <th>تاريخ النهاية</th>
             <th>اسم المنتج</th>
             <th>إجمالي السعر</th>
             <th>العمليات</th>
         </tr>
     </thead>
     <tbody id="invoicesTableBody">
-        <!-- سيتم عرض الفواتير هنا -->
+        <!-- سيتم إضافة الصفوف ديناميكيًا -->
     </tbody>
 </table>
 
 <div class="total" id="totalInvoices">إجمالي الفواتير: 0 ريال</div>
+
+<!-- نموذج إنشاء فاتورة جديدة -->
+<div id="createInvoiceModal" class="create-invoice-modal">
+    <div class="create-invoice-content">
+        <h2>إنشاء فاتورة مشتريات جديدة</h2>
+        
+        <form id="createInvoiceForm" class="create-invoice-form">
+            <div class="form-group">
+                <label for="newInvoiceTitle">عنوان الفاتورة</label>
+                <input type="text" id="newInvoiceTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newInvoiceNumber">رقم الفاتورة</label>
+                <input type="text" id="newInvoiceNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newClientName">اسم العميل</label>
+                <input type="text" id="newClientName" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="newStartDate">تاريخ البداية</label>
+                    <input type="date" id="newStartDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="newEndDate">تاريخ النهاية</label>
+                    <input type="date" id="newEndDate" required>
+                </div>
+            </div>
+
+            <div class="product-section">
+                <h3>المنتجات</h3>
+                <table id="newProductTable" class="product-table">
+                    <thead>
+                        <tr>
+                            <th>اسم المنتج</th>
+                            <th>السعر</th>
+                            <th>الكمية</th>
+                            <th>العمليات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="newProductTableBody">
+                        <!-- سيتم إضافة صفوف المنتجات هنا -->
+                    </tbody>
+                </table>
+
+                <button type="button" class="btn-add-product" onclick="addNewProductRow()">
+                    إضافة منتج
+                </button>
+            </div>
+
+            <div class="total-price">
+                <strong>إجمالي السعر: </strong>
+                <span id="newTotalPrice">0.00</span> ريال
+            </div>
+
+            <div class="form-actions">
+                <button type="button" onclick="saveNewInvoice()">حفظ الفاتورة</button>
+                <button type="button" onclick="closeCreateInvoiceModal()">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- نموذج عرض تفاصيل الفاتورة -->
+<div id="invoiceDetailsModal" class="invoice-details-modal">
+    <div class="invoice-details-content">
+        <div class="invoice-details-header">
+            <h2 id="detailsModalTitle">تفاصيل الفاتورة</h2>
+            <button onclick="closeInvoiceDetailsModal()">×</button>
+        </div>
+
+        <div class="invoice-details-body">
+            <div>
+                <strong>رقم الفاتورة:</strong>
+                <span id="detailsInvoiceNumber"></span>
+            </div>
+            <div>
+                <strong>عنوان الفاتورة:</strong>
+                <span id="detailsInvoiceTitle"></span>
+            </div>
+            <div>
+                <strong>اسم العميل:</strong>
+                <span id="detailsClientName"></span>
+            </div>
+            <div>
+                <strong>التاريخ:</strong>
+                <span id="detailsStartDate"></span> - 
+                <span id="detailsEndDate"></span>
+            </div>
+
+            <div class="invoice-details-products">
+                <h3>المنتجات</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم المنتج</th>
+                            <th>السعر</th>
+                            <th>الكمية</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailsProductTableBody">
+                        <!-- سيتم إضافة صفوف المنتجات هنا -->
+                    </tbody>
+                </table>
+
+                <div class="total-price">
+                    <strong>إجمالي الفاتورة:</strong>
+                    <span id="detailsTotalPrice"></span> ريال
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- زر العودة للرئيسية -->
 <div style="text-align: center; margin-top: 20px;">
@@ -107,45 +457,80 @@
     let invoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
     let filteredInvoices = invoices;
 
-    // دالة لعرض الفواتير
+    // دالة لجلب عناوين الفواتير
+    function getInvoiceTitles() {
+        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+        return purchaseInvoices.map((invoice, index) => ({
+            title: invoice.invoiceTitle || `فاتورة ${index + 1}`,
+            supplier: invoice.clientName || 'بدون مورد'
+        }));
+    }
+
+    // دالة لعرض الفواتير مع تحسين وضوح النص
     function displayInvoices() {
         const tableBody = document.getElementById('invoicesTableBody');
         tableBody.innerHTML = '';
         let total = 0;
 
+        // التحقق من وجود فواتير
+        if (filteredInvoices.length === 0) {
+            const noInvoicesRow = document.createElement('tr');
+            noInvoicesRow.innerHTML = `
+                <td colspan="7" class="text-center" style="color: #777; padding: 20px;">
+                    <strong>لا توجد فواتير متاحة حاليًا</strong>
+                </td>
+            `;
+            tableBody.appendChild(noInvoicesRow);
+            return;
+        }
+
         filteredInvoices.forEach((invoice, index) => {
-            const invoiceTotal = calculateTotalInvoicePrice(invoice.products);
-            total += parseFloat(invoiceTotal);
+            // تصفية المنتجات الفارغة
+            const filteredProducts = invoice.products.filter(product => 
+                product.name && product.price
+            );
 
-            // تحويل التاريخ من النص إلى كائن Date
+            // حساب إجمالي الفاتورة
+            const invoiceTotal = filteredProducts.reduce(
+                (sum, product) => sum + (product.price * product.quantity), 0
+            );
+            total += invoiceTotal;
+
+            // تحويل التواريخ
             const startDate = new Date(invoice.startDate); // تاريخ البداية
-            const endDate = new Date(invoice.endDate); // تاريخ النهاية
-
-            // عرض التواريخ بتنسيق يوم/شهر/سنة
             const formattedStartDate = startDate.toLocaleDateString('ar-EG', {
                 year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            });
-            const formattedEndDate = endDate.toLocaleDateString('ar-EG', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
+                month: 'long',
+                day: 'numeric'
             });
 
-            // عرض أسماء المنتجات كـ تاجز
-            const productTags = invoice.products.map(product => `<span class="tag">${product.name}</span>`).join(' ');
+            // إنشاء قائمة المنتجات مع تنسيق أفضل
+            const productTags = filteredProducts.map(p => 
+                `<span class="tag">${p.name}</span>`
+            ).join(' ');
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${invoice.invoiceTitle}</td>
-                <td>${invoice.clientName}</td>
-                <td>${formattedStartDate}</td>
-                <td>${formattedEndDate}</td>
-                <td>${productTags}</td>
-                <td>${invoiceTotal} ريال</td>
+                <td class="invoice-number">
+                    ${invoice.invoiceNumber || 'غير محدد'}
+                </td>
+                <td class="invoice-title">
+                    ${invoice.invoiceTitle || 'بدون عنوان'}
+                </td>
+                <td class="invoice-client">
+                    ${invoice.clientName || 'غير محدد'}
+                </td>
+                <td class="invoice-date">
+                    ${formattedStartDate}
+                </td>
                 <td>
-                    <button onclick="viewInvoice(${index})">عرض</button>
+                    ${productTags}
+                </td>
+                <td class="invoice-total">
+                    ${invoiceTotal.toFixed(2)} ريال
+                </td>
+                <td>
+                    <button onclick="viewInvoiceDetails(${index})">عرض</button>
                     <button onclick="editInvoice(${index})">تعديل</button>
                     <button onclick="deleteInvoice(${index})">حذف</button>
                 </td>
@@ -153,7 +538,11 @@
             tableBody.appendChild(row);
         });
 
-        document.getElementById('totalInvoices').innerText = `إجمالي الفواتير: ${total.toFixed(2)} ريال`;
+        // تحديث إجمالي الفواتير مع تنسيق أفضل
+        document.getElementById('totalInvoices').innerHTML = `
+            <strong style="color: #2c3e50;">إجمالي الفواتير: </strong>
+            <span style="color: #e74c3c; font-size: 1.2em;">${total.toFixed(2)} ريال</span>
+        `;
     }
 
     // دالة لحساب إجمالي كل فاتورة
@@ -162,7 +551,7 @@
     }
 
     // دالة لاسترداد بيانات الفاتورة عند الضغط على زر عرض
-    function viewInvoice(index) {
+    function viewInvoiceDetails(index) {
         const invoice = filteredInvoices[index];
         localStorage.setItem('currentInvoice', JSON.stringify(invoice)); // تخزين الفاتورة المختارة
         window.location.href = 'invoice.html'; // الانتقال إلى صفحة الفاتورة
@@ -200,15 +589,17 @@
 
     // دالة لطباعة الفواتير
     function printInvoices() {
+        // إزالة الأزرار قبل الطباعة
         const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => button.style.display = 'none'); // إخفاء الأزرار
+        buttons.forEach(button => button.style.display = 'none');
 
-        window.print(); // بدء عملية الطباعة
+        // طباعة الصفحة
+        window.print();
 
-        // بعد الطباعة، إعادة عرض الأزرار
+        // إعادة إظهار الأزرار بعد الطباعة
         setTimeout(() => {
-            buttons.forEach(button => button.style.display = 'block');
-        }, 1000);
+            buttons.forEach(button => button.style.display = '');
+        }, 100);
     }
 
     // دالة للعودة للرئيسية
@@ -216,7 +607,230 @@
         window.location.href = 'index.html'; // تأكد من تعديل هذا الرابط ليعكس اسم الصفحة الرئيسية لديك
     }
 
-    // استدعاء دالة عرض الفواتير عند تحميل الصفحة
+    // دالة فتح نموذج إنشاء فاتورة جديدة
+    function openCreateInvoiceModal() {
+        document.getElementById('createInvoiceModal').style.display = 'block';
+        // إعادة تعيين النموذج
+        document.getElementById('createInvoiceForm').reset();
+        document.getElementById('newProductTableBody').innerHTML = '';
+        document.getElementById('newTotalPrice').textContent = '0.00';
+    }
+
+    // دالة إغلاق نموذج إنشاء فاتورة
+    function closeCreateInvoiceModal() {
+        document.getElementById('createInvoiceModal').style.display = 'none';
+    }
+
+    // دالة إضافة صف منتج جديد
+    function addNewProductRow() {
+        const tableBody = document.getElementById('newProductTableBody');
+        const newRow = document.createElement('tr');
+        
+        newRow.innerHTML = `
+            <td>
+                <input type="text" class="product-name" required>
+            </td>
+            <td>
+                <input type="number" class="product-price" min="0" step="0.01" required>
+            </td>
+            <td>
+                <input type="number" class="product-quantity" min="1" required>
+            </td>
+            <td>
+                <button type="button" class="btn-remove-product" onclick="removeProductRow(this)">
+                    حذف
+                </button>
+            </td>
+        `;
+        
+        tableBody.appendChild(newRow);
+        calculateNewTotalPrice();
+    }
+
+    // دالة إزالة صف منتج
+    function removeProductRow(button) {
+        button.closest('tr').remove();
+        calculateNewTotalPrice();
+    }
+
+    // دالة حساب إجمالي السعر
+    function calculateNewTotalPrice() {
+        const rows = document.querySelectorAll('#newProductTableBody tr');
+        let total = 0;
+        
+        rows.forEach(row => {
+            const price = parseFloat(row.querySelector('.product-price').value) || 0;
+            const quantity = parseInt(row.querySelector('.product-quantity').value) || 0;
+            total += price * quantity;
+        });
+        
+        document.getElementById('newTotalPrice').textContent = total.toFixed(2);
+    }
+
+    // دالة حفظ الفاتورة الجديدة
+    function saveNewInvoice() {
+        const title = document.getElementById('newInvoiceTitle').value.trim();
+        const number = document.getElementById('newInvoiceNumber').value.trim();
+        const clientName = document.getElementById('newClientName').value.trim();
+        const startDate = document.getElementById('newStartDate').value;
+        const endDate = document.getElementById('newEndDate').value;
+
+        // التحقق من صحة البيانات
+        if (!title || !number || !clientName || !startDate || !endDate) {
+            alert('يرجى ملء جميع الحقول');
+            return;
+        }
+
+        // جمع المنتجات
+        const products = [];
+        const productRows = document.querySelectorAll('#newProductTableBody tr');
+        
+        productRows.forEach(row => {
+            const name = row.querySelector('.product-name').value.trim();
+            const price = parseFloat(row.querySelector('.product-price').value);
+            const quantity = parseInt(row.querySelector('.product-quantity').value);
+            
+            if (name && !isNaN(price) && !isNaN(quantity)) {
+                products.push({ name, price, quantity });
+            }
+        });
+
+        if (products.length === 0) {
+            alert('يرجى إضافة منتج واحد على الأقل');
+            return;
+        }
+
+        // حفظ الفاتورة
+        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+        const newInvoice = {
+            invoiceTitle: title,
+            invoiceNumber: number,
+            clientName,
+            startDate,
+            endDate,
+            products,
+            date: new Date().toISOString()
+        };
+
+        purchaseInvoices.push(newInvoice);
+        localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+
+        // إعادة تحميل الفواتير وإغلاق النموذج
+        closeCreateInvoiceModal();
+        displayInvoices();
+    }
+
+    // دالة عرض تفاصيل الفاتورة
+    function viewInvoiceDetails(index) {
+        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+        const invoice = purchaseInvoices[index];
+
+        // تعبئة المعلومات الأساسية
+        document.getElementById('detailsInvoiceNumber').textContent = invoice.invoiceNumber;
+        document.getElementById('detailsInvoiceTitle').textContent = invoice.invoiceTitle;
+        document.getElementById('detailsClientName').textContent = invoice.clientName;
+        document.getElementById('detailsStartDate').textContent = new Date(invoice.startDate).toLocaleDateString('ar-EG');
+        document.getElementById('detailsEndDate').textContent = new Date(invoice.endDate).toLocaleDateString('ar-EG');
+
+        // تعبئة جدول المنتجات
+        const productTableBody = document.getElementById('detailsProductTableBody');
+        productTableBody.innerHTML = '';
+        let totalPrice = 0;
+
+        invoice.products.forEach(product => {
+            const productTotal = product.price * product.quantity;
+            totalPrice += productTotal;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.name}</td>
+                <td>${product.price.toFixed(2)}</td>
+                <td>${product.quantity}</td>
+                <td>${productTotal.toFixed(2)}</td>
+            `;
+            productTableBody.appendChild(row);
+        });
+
+        // تحديث إجمالي السعر
+        document.getElementById('detailsTotalPrice').textContent = totalPrice.toFixed(2);
+
+        // عرض النموذج
+        document.getElementById('invoiceDetailsModal').style.display = 'block';
+    }
+
+    // دالة إغلاق نموذج تفاصيل الفاتورة
+    function closeInvoiceDetailsModal() {
+        document.getElementById('invoiceDetailsModal').style.display = 'none';
+    }
+
+    // تحديث دالة عرض الفواتير لاستخدام الدوال الجديدة
+    function displayInvoices() {
+        const tableBody = document.getElementById('invoicesTableBody');
+        tableBody.innerHTML = '';
+        let total = 0;
+
+        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+
+        if (purchaseInvoices.length === 0) {
+            const noInvoicesRow = document.createElement('tr');
+            noInvoicesRow.innerHTML = `
+                <td colspan="8" class="text-center" style="color: #777; padding: 20px;">
+                    <strong>لا توجد فواتير متاحة حاليًا</strong>
+                </td>
+            `;
+            tableBody.appendChild(noInvoicesRow);
+            return;
+        }
+
+        purchaseInvoices.forEach((invoice, index) => {
+            const invoiceTotal = invoice.products.reduce(
+                (sum, product) => sum + (product.price * product.quantity), 0
+            );
+            total += invoiceTotal;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${invoice.invoiceNumber}</td>
+                <td>${invoice.invoiceTitle}</td>
+                <td>${invoice.clientName}</td>
+                <td>${new Date(invoice.startDate).toLocaleDateString('ar-EG')}</td>
+                <td>${invoice.products.map(p => p.name).join(', ')}</td>
+                <td>${invoiceTotal.toFixed(2)} ريال</td>
+                <td>
+                    <button onclick="viewInvoiceDetails(${index})">عرض</button>
+                    <button onclick="editInvoice(${index})">تعديل</button>
+                    <button onclick="deleteInvoice(${index})">حذف</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        document.getElementById('totalInvoices').innerHTML = `
+            <strong style="color: #2c3e50;">إجمالي الفواتير: </strong>
+            <span style="color: #e74c3c; font-size: 1.2em;">${total.toFixed(2)} ريال</span>
+        `;
+    }
+
+    // دالة حذف الفاتورة
+    function deleteInvoice(index) {
+        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+        
+        // تأكيد الحذف
+        const confirmDelete = confirm('هل أنت متأكد من حذف هذه الفاتورة؟');
+        
+        if (confirmDelete) {
+            purchaseInvoices.splice(index, 1);
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+            displayInvoices();
+        }
+    }
+
+    // دالة تعديل الفاتورة (تحتاج إلى تنفيذ)
+    function editInvoice(index) {
+        alert('وظيفة التعديل قيد التطوير');
+    }
+
+    // تحميل الفواتير عند فتح الصفحة
     window.onload = displayInvoices;
 </script>
 
