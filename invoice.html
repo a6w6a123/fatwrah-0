@@ -5,70 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تفاصيل الفاتورة</title>
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-light: #ecf0f1;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            line-height: 1.6;
             direction: rtl;
-            background-color: #f5f5f5;
             padding: 20px;
         }
-        h1 {
-            text-align: center;
-            color: #4CAF50;
-            margin-bottom: 30px;
-        }
-        .invoice-details {
-            max-width: 600px;
+        .invoice-wrapper {
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: #fff;
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .invoice-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 25px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .invoice-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .invoice-number {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        .invoice-title {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 10px;
+        }
+        .invoice-body {
+            padding: 40px;
+        }
+        .client-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: var(--background-light);
+            border-radius: 10px;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .invoice-details label {
-            display: block;
-            margin-bottom: 8px;
+        .client-detail-item {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
         }
-        .invoice-details p {
-            margin: 0 0 15px 0;
-            padding: 10px;
-            background-color: #f1f1f1;
-            border-radius: 4px;
+        .detail-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .detail-value {
+            color: var(--text-dark);
+            font-weight: bold;
         }
         .products-table {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 30px;
         }
-        .products-table, th, td {
-            border: 1px solid #ddd;
+        .products-table thead {
+            background-color: var(--primary-color);
+            color: white;
         }
-        th, td {
-            padding: 12px;
+        .products-table th, .products-table td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid #e0e4e8;
+        }
+        .products-table th {
+            font-weight: 600;
+        }
+        .total-section {
+            background-color: var(--background-light);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-label {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+        .total-value {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+        .qr-barcode-section {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+        }
+        .print-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px 20px;
+            background-color: var(--secondary-color);
+            color: white;
             text-align: center;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
             cursor: pointer;
-            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        button:hover {
-            background-color: #45a049;
-        }
-        .qr-code {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .barcode {
-            text-align: center;
-            margin: 20px 0;
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body {
+                margin: 1cm;
+                background: white !important;
+            }
+            .invoice-wrapper {
+                box-shadow: none !important;
+                width: 100%;
+            }
+            .invoice-body {
+                padding: 20px !important;
+            }
+            .print-button, 
+            .qr-barcode-section {
+                display: none !important;
+            }
+            .client-details,
+            .products-table,
+            .total-section {
+                page-break-inside: avoid;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -77,106 +175,112 @@
 </head>
 <body>
 
-    <h1>تفاصيل الفاتورة</h1>
-
-    <div class="invoice-details">
-        <label>عنوان الفاتورة:</label>
-        <p id="invoiceTitle"></p>
-
-        <label>اسم العميل:</label>
-        <p id="clientName"></p>
-
-        <label>من تاريخ:</label>
-        <p id="startDate"></p>
-
-        <label>الى تاريخ:</label>
-        <p id="endDate"></p>
-
-        <h3>المنتجات</h3>
-        <table class="products-table">
-            <thead>
-                <tr>
-                    <th>اسم المنتج</th>
-                    <th>السعر</th>
-                    <th>ملاحظة</th>
-                </tr>
-            </thead>
-            <tbody id="productsTableBody">
-                <!-- سيتم عرض المنتجات هنا -->
-            </tbody>
-        </table>
-
-        <label>إجمالي السعر:</label>
-        <p id="totalPrice"></p>
-
-        <div class="qr-code">
-            <h4></h4>
-            <div id="qrcode"></div>
+    <div class="invoice-wrapper">
+        <div class="invoice-header">
+            <h1>تفاصيل الفاتورة</h1>
+            <div class="invoice-number" id="invoiceNumber"></div>
+            <div class="invoice-title" id="invoiceTitle"></div>
         </div>
 
-        <div class="barcode">
-            <h4></h4>
-            <svg id="barcode"></svg> <!-- إضافة عنصر SVG لعرض الباركود -->
-        </div>
+        <div class="invoice-body">
+            <div class="client-details">
+                <div class="client-detail-item">
+                    <span class="detail-label">اسم العميل</span>
+                    <span class="detail-value" id="clientName"></span>
+                </div>
+                <div class="client-detail-item">
+                    <span class="detail-label">تاريخ البدء</span>
+                    <span class="detail-value" id="startDate"></span>
+                </div>
+                <div class="client-detail-item">
+                    <span class="detail-label">تاريخ الانتهاء</span>
+                    <span class="detail-value" id="endDate"></span>
+                </div>
+            </div>
 
-        <button id="printButton" onclick="printInvoice()">طباعة الفاتورة</button>
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>اسم المنتج</th>
+                        <th>مخصومة من بنك</th>
+                        <th>السعر</th>
+                        <th>الإجمالي</th>
+                        <th>ملاحظة</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody"></tbody>
+            </table>
+
+            <div class="total-section">
+                <span class="total-label">إجمالي الفاتورة</span>
+                <span class="total-value" id="totalPrice"></span>
+            </div>
+
+            <div class="qr-barcode-section">
+                <div id="qrcode"></div>
+                <div id="barcode"></div>
+            </div>
+
+            <button onclick="window.print()" class="print-button">
+                طباعة الفاتورة
+            </button>
+        </div>
     </div>
 
     <script>
-        // استرداد بيانات الفاتورة عند تحميل الصفحة
-        window.onload = function() {
-            const invoice = JSON.parse(localStorage.getItem('currentInvoice'));
-            if (invoice) {
-                document.getElementById('invoiceTitle').innerText = invoice.invoiceTitle;
-                document.getElementById('clientName').innerText = invoice.clientName;
-                document.getElementById('startDate').innerText = invoice.startDate; // عرض تاريخ البداية
-                document.getElementById('endDate').innerText = invoice.endDate; // عرض تاريخ النهاية
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentInvoice = JSON.parse(localStorage.getItem('currentInvoice'));
+            
+            if (currentInvoice) {
+                // Fill invoice details
+                document.getElementById('invoiceNumber').textContent = `فاتورة رقم: ${currentInvoice.id || 'غير محدد'}`;
+                document.getElementById('invoiceTitle').textContent = currentInvoice.invoiceTitle || '';
 
+                // Client details
+                document.getElementById('clientName').textContent = currentInvoice.clientName || 'غير محدد';
+                document.getElementById('startDate').textContent = currentInvoice.startDate || 'غير محدد';
+                document.getElementById('endDate').textContent = currentInvoice.endDate || 'غير محدد';
+
+                // Fill products table
                 const productsTableBody = document.getElementById('productsTableBody');
-                invoice.products.forEach(product => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${product.name}</td>
-                        <td>${product.price} ريال</td>
-                        <td>${product.note}</td>
-                    `;
-                    productsTableBody.appendChild(row);
-                });
+                let totalPrice = 0;
+                
+                if (currentInvoice.products && currentInvoice.products.length > 0) {
+                    currentInvoice.products.forEach(product => {
+                        const productTotal = product.quantity * product.price;
+                        totalPrice += productTotal;
+                        
+                        const row = `
+                            <tr>
+                                <td>${product.name || 'غير محدد'}</td>
+                                <td>${product.bankDeduction || 'غير محدد'}</td>
+                                <td>${product.price || 0} ريال</td>
+                                <td>${productTotal} ريال</td>
+                                <td>${product.note || ''}</td>
+                            </tr>
+                        `;
+                        productsTableBody.innerHTML += row;
+                    });
+                }
 
-                const totalPrice = invoice.products.reduce((total, product) => total + parseFloat(product.price), 0).toFixed(2);
-                document.getElementById('totalPrice').innerText = `${totalPrice} ريال`;
+                document.getElementById('totalPrice').textContent = `${totalPrice.toFixed(2)} ريال`;
 
-                // إنشاء QR Code للفاتورة
-                const qrcode = new QRCode(document.getElementById(), {
-                    text: JSON.stringify(invoice), // نص كود QR
+                // Generate QR Code
+                new QRCode(document.getElementById("qrcode"), {
+                    text: JSON.stringify(currentInvoice),
                     width: 128,
-                    height: 128,
+                    height: 128
                 });
 
-                // إنشاء باركود عشوائي للفاتورة
-                const randomBarcodeValue = generateRandomBarcode();
-                JsBarcode("#barcode", randomBarcodeValue, {
+                // Generate Barcode
+                JsBarcode("#barcode", currentInvoice.id || 'N/A', {
                     format: "CODE128",
-                    displayValue: true,
                     width: 2,
-                    height: 40,
+                    height: 100,
+                    displayValue: true
                 });
-
-                // تخزين الباركود في الفاتورة
-                invoice.barcode = randomBarcodeValue;
-                localStorage.setItem('currentInvoice', JSON.stringify(invoice));
             }
-        };
-
-        // دالة لإنشاء باركود عشوائي
-        function generateRandomBarcode() {
-            return Math.random().toString(36).substring(2, 10).toUpperCase(); // إنشاء سلسلة عشوائية
-        }
-
-        // دالة لطباعة الفاتورة
-        function printInvoice() {
-            window.print();
-        }
+        });
     </script>
 
 </body>
