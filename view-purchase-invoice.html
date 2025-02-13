@@ -281,6 +281,28 @@
             padding: 10px;
             text-align: right;
         }
+
+        /* تحسين محاذاة الأزرار */
+        table td:last-child {
+            text-align: left;
+        }
+
+        table td:last-child button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            font-size: 0.9em;
+        }
+
+        .invoice-actions {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .invoice-actions button {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -289,7 +311,7 @@
 
 <div class="invoice-filters no-print">
     <select id="monthFilter" onchange="filterInvoices()">
-        <option value="">اختر شهر</option>
+        <option value="all">كل الشهور</option>
         <option value="1">يناير</option>
         <option value="2">فبراير</option>
         <option value="3">مارس</option>
@@ -552,9 +574,14 @@
 
     // دالة لاسترداد بيانات الفاتورة عند الضغط على زر عرض
     function viewInvoiceDetails(index) {
-        const invoice = filteredInvoices[index];
-        localStorage.setItem('currentInvoice', JSON.stringify(invoice)); // تخزين الفاتورة المختارة
-        window.location.href = 'invoice.html'; // الانتقال إلى صفحة الفاتورة
+        const purchaseInvoices = loadInvoicesFromSources();
+        const invoice = purchaseInvoices[index];
+        
+        // تخزين الفاتورة المختارة في localStorage
+        localStorage.setItem('currentInvoice', JSON.stringify(invoice));
+        
+        // الانتقال إلى صفحة الفاتورة
+        window.location.href = 'invoice.html';
     }
 
     // دالة لتعديل الفاتورة
@@ -573,21 +600,107 @@
         }
     }
 
-    // دالة لتصفية الفواتير حسب شهر تاريخ البداية
-    function filterInvoices() {
-        const month = document.getElementById('monthFilter').value;
-        if (month) {
-            filteredInvoices = invoices.filter(invoice => {
-                const startDate = new Date(invoice.startDate); // استخدام تاريخ البداية
-                return startDate.getMonth() + 1 == month; // هنا +1 لأن الشهور تبدأ من 0
-            });
-        } else {
-            filteredInvoices = invoices;
-        }
-        displayInvoices();
+    // دالة لتحميل الفواتير من المصادر المختلفة
+    function loadInvoicesFromSources() {
+        const mainPageInvoices = JSON.parse(localStorage.getItem('mainPageInvoices')) || [];
+        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+
+        // دمج الفواتير من الصفحة الرئيسية مع فواتير المشتريات
+        const combinedInvoices = [...mainPageInvoices, ...purchaseInvoices];
+        
+        // تخزين الفواتير المدمجة في purchaseInvoices
+        localStorage.setItem('purchaseInvoices', JSON.stringify(combinedInvoices));
+        
+        return combinedInvoices;
     }
 
-    // دالة لطباعة الفواتير
+    // دالة تصفية الفواتير حسب الشهر
+    function filterInvoices() {
+        const selectedMonth = document.getElementById('monthFilter').value;
+        const purchaseInvoices = loadInvoicesFromSources();
+        
+        // تصفية الفواتير
+        const filteredInvoices = purchaseInvoices.filter(invoice => {
+            if (!invoice.startDate) return false;
+            
+            const invoiceDate = new Date(invoice.startDate);
+            const invoiceMonth = invoiceDate.getMonth() + 1; // getMonth() يعيد 0-11
+            
+            return selectedMonth === 'all' || 
+                   invoiceMonth === parseInt(selectedMonth);
+        });
+
+        // عرض الفواتير المصفاة
+        displayFilteredInvoices(filteredInvoices);
+    }
+
+    // دالة عرض الفواتير المصفاة
+    function displayFilteredInvoices(filteredInvoices) {
+        const tableBody = document.getElementById('invoicesTableBody');
+        tableBody.innerHTML = '';
+        let total = 0;
+
+        if (filteredInvoices.length === 0) {
+            const noInvoicesRow = document.createElement('tr');
+            noInvoicesRow.innerHTML = `
+                <td colspan="8" class="text-center" style="color: #777; padding: 20px;">
+                    <strong>لا توجد فواتير متاحة للشهر المحدد</strong>
+                </td>
+            `;
+            tableBody.appendChild(noInvoicesRow);
+            return;
+        }
+
+        filteredInvoices.forEach((invoice, index) => {
+            const invoiceTotal = invoice.products.reduce(
+                (sum, product) => sum + (product.price * product.quantity), 0
+            );
+            total += invoiceTotal;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${invoice.invoiceNumber || 'غير محدد'}</td>
+                <td>${invoice.invoiceTitle || 'فاتورة'}</td>
+                <td>${invoice.clientName || 'عميل'}</td>
+                <td>${invoice.startDate ? new Date(invoice.startDate).toLocaleDateString('ar-EG') : 'غير محدد'}</td>
+                <td>${invoice.products.map(p => p.name).join(', ')}</td>
+                <td>${invoiceTotal.toFixed(2)} ريال</td>
+                <td>
+                    <button onclick="viewInvoiceDetails(${index})">عرض</button>
+                    <button onclick="editInvoice(${index})">تعديل</button>
+                    <button onclick="deleteInvoice(${index})">حذف</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        document.getElementById('totalInvoices').innerHTML = `
+            <strong style="color: #2c3e50;">إجمالي الفواتير: </strong>
+            <span style="color: #e74c3c; font-size: 1.2em;">${total.toFixed(2)} ريال</span>
+        `;
+    }
+
+    // دالة عرض الفواتير
+    function displayInvoices() {
+        const purchaseInvoices = loadInvoicesFromSources();
+        displayFilteredInvoices(purchaseInvoices);
+    }
+
+    // دالة حذف الفاتورة
+    function deleteInvoice(index) {
+        const purchaseInvoices = loadInvoicesFromSources();
+        
+        // تأكيد الحذف
+        const confirmDelete = confirm('هل أنت متأكد من حذف هذه الفاتورة؟');
+        
+        if (confirmDelete) {
+            purchaseInvoices.splice(index, 1);
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+            displayInvoices();
+        }
+    }
+
+    // دالة طباعة الفواتير
     function printInvoices() {
         // إزالة الأزرار قبل الطباعة
         const buttons = document.querySelectorAll('button');
@@ -722,112 +835,19 @@
 
     // دالة عرض تفاصيل الفاتورة
     function viewInvoiceDetails(index) {
-        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+        const purchaseInvoices = loadInvoicesFromSources();
         const invoice = purchaseInvoices[index];
-
-        // تعبئة المعلومات الأساسية
-        document.getElementById('detailsInvoiceNumber').textContent = invoice.invoiceNumber;
-        document.getElementById('detailsInvoiceTitle').textContent = invoice.invoiceTitle;
-        document.getElementById('detailsClientName').textContent = invoice.clientName;
-        document.getElementById('detailsStartDate').textContent = new Date(invoice.startDate).toLocaleDateString('ar-EG');
-        document.getElementById('detailsEndDate').textContent = new Date(invoice.endDate).toLocaleDateString('ar-EG');
-
-        // تعبئة جدول المنتجات
-        const productTableBody = document.getElementById('detailsProductTableBody');
-        productTableBody.innerHTML = '';
-        let totalPrice = 0;
-
-        invoice.products.forEach(product => {
-            const productTotal = product.price * product.quantity;
-            totalPrice += productTotal;
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${product.name}</td>
-                <td>${product.price.toFixed(2)}</td>
-                <td>${product.quantity}</td>
-                <td>${productTotal.toFixed(2)}</td>
-            `;
-            productTableBody.appendChild(row);
-        });
-
-        // تحديث إجمالي السعر
-        document.getElementById('detailsTotalPrice').textContent = totalPrice.toFixed(2);
-
-        // عرض النموذج
-        document.getElementById('invoiceDetailsModal').style.display = 'block';
+        
+        // تخزين الفاتورة المختارة في localStorage
+        localStorage.setItem('currentInvoice', JSON.stringify(invoice));
+        
+        // الانتقال إلى صفحة الفاتورة
+        window.location.href = 'invoice.html';
     }
 
     // دالة إغلاق نموذج تفاصيل الفاتورة
     function closeInvoiceDetailsModal() {
         document.getElementById('invoiceDetailsModal').style.display = 'none';
-    }
-
-    // تحديث دالة عرض الفواتير لاستخدام الدوال الجديدة
-    function displayInvoices() {
-        const tableBody = document.getElementById('invoicesTableBody');
-        tableBody.innerHTML = '';
-        let total = 0;
-
-        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
-
-        if (purchaseInvoices.length === 0) {
-            const noInvoicesRow = document.createElement('tr');
-            noInvoicesRow.innerHTML = `
-                <td colspan="8" class="text-center" style="color: #777; padding: 20px;">
-                    <strong>لا توجد فواتير متاحة حاليًا</strong>
-                </td>
-            `;
-            tableBody.appendChild(noInvoicesRow);
-            return;
-        }
-
-        purchaseInvoices.forEach((invoice, index) => {
-            const invoiceTotal = invoice.products.reduce(
-                (sum, product) => sum + (product.price * product.quantity), 0
-            );
-            total += invoiceTotal;
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${invoice.invoiceNumber}</td>
-                <td>${invoice.invoiceTitle}</td>
-                <td>${invoice.clientName}</td>
-                <td>${new Date(invoice.startDate).toLocaleDateString('ar-EG')}</td>
-                <td>${invoice.products.map(p => p.name).join(', ')}</td>
-                <td>${invoiceTotal.toFixed(2)} ريال</td>
-                <td>
-                    <button onclick="viewInvoiceDetails(${index})">عرض</button>
-                    <button onclick="editInvoice(${index})">تعديل</button>
-                    <button onclick="deleteInvoice(${index})">حذف</button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-
-        document.getElementById('totalInvoices').innerHTML = `
-            <strong style="color: #2c3e50;">إجمالي الفواتير: </strong>
-            <span style="color: #e74c3c; font-size: 1.2em;">${total.toFixed(2)} ريال</span>
-        `;
-    }
-
-    // دالة حذف الفاتورة
-    function deleteInvoice(index) {
-        const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
-        
-        // تأكيد الحذف
-        const confirmDelete = confirm('هل أنت متأكد من حذف هذه الفاتورة؟');
-        
-        if (confirmDelete) {
-            purchaseInvoices.splice(index, 1);
-            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
-            displayInvoices();
-        }
-    }
-
-    // دالة تعديل الفاتورة (تحتاج إلى تنفيذ)
-    function editInvoice(index) {
-        alert('وظيفة التعديل قيد التطوير');
     }
 
     // تحميل الفواتير عند فتح الصفحة
