@@ -6,34 +6,194 @@
     <title>الصفحة الرئيسية</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Cairo', Arial, sans-serif;
             direction: rtl;
             text-align: center;
-            background-color: #f5f5f5;
+            background-color: #f0f2f5;
+            margin: 0;
             padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: bold;
         }
         button {
-            padding: 10px 20px;
-            margin: 20px;
-            font-size: 18px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            border-radius: 8px;
             border: none;
-            background-color: #4CAF50;
+            background-color: #3498db;
             color: white;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
         .stats {
-            margin-top: 30px;
-            font-size: 20px;
-            color: #333;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .stats h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
         }
         select {
             padding: 10px;
             font-size: 16px;
-            margin: 20px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+        }
+        .quick-product-add {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .quick-product-add h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .quick-product-add input, .quick-product-add select {
+            margin: 10px;
+            padding: 10px;
+            width: calc(100% - 40px);
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .beneficiary-tags {
+            margin-top: 15px;
+        }
+        .beneficiary-tag {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        .beneficiary-tag-remove {
+            margin-right: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        #invoiceDataDisplay {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        #invoiceDetailsText {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        @media (max-width: 600px) {
+            button, input, select {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+        
+        /* نموذج إضافة فاتورة المشتريات */
+        .invoice-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .invoice-form h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .invoice-form .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .invoice-form label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .invoice-form input[type="text"], .invoice-form input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .invoice-form .product-section {
+            margin-top: 20px;
+        }
+        
+        .invoice-form .product-section h3 {
+            margin-bottom: 10px;
+        }
+        
+        .invoice-form table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .invoice-form th, .invoice-form td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .invoice-form .product-actions {
+            margin-top: 10px;
+        }
+        
+        .invoice-form .total-price {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .invoice-form .form-actions {
+            margin-top: 20px;
+        }
+        
+        /* نافذة النجاح */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -41,7 +201,7 @@
     <h1>منصة إدارة الفواتير</h1>
     <button onclick="window.location.href='create-purchase-invoice.html'">إنشاء فاتورة مشتريات</button>
     <button onclick="window.location.href='create-booking-invoice.html'">إنشاء فاتورة حجز</button>
-        <button onclick="window.location.href='view-purchase-invoice.html'">عرض فواتير المشتريات</button>
+    <button onclick="window.location.href='view-purchase-invoice.html'">عرض فواتير المشتريات</button>
     <button onclick="window.location.href='view-booking-invoice.html'">عرض فواتير الحجوزات</button>
 
     <div class="stats">
@@ -65,6 +225,44 @@
         <p id="totalPurchases">إجمالي المشتريات: 0 ريال</p>
     </div>
 
+    <!-- قسم الإضافة السريعة للمنتجات -->
+    <div class="quick-product-add">
+        <h2>إضافة منتج سريعة</h2>
+        <label for="invoiceTitleSelect">اختر عنوان الفاتورة:</label>
+        <select id="invoiceTitleSelect">
+            <option value="">اختر عنوان الفاتورة</option>
+            <!-- سيتم ملء هذه القائمة ديناميكياً باستخدام JavaScript -->
+        </select>
+
+        <div class="bank-selection">
+            <label>اختر البنك:</label>
+            <select id="bankSelect">
+                <option value="">اختر البنك</option>
+                <option value="الرياض">بنك الرياض</option>
+                <option value="الراجحي">بنك الراجحي</option>
+                <option value="الرياض_فيزا">بنك الرياض فيزا</option>
+                <option value="الانماء">بنك الانماء</option>
+            </select>
+        </div>
+
+        <form id="quickProductForm">
+            <input type="text" id="productName" placeholder="اسم المنتج" required>
+            <input type="number" id="productPrice" placeholder="السعر" min="0" step="0.01" required>
+            <input type="text" id="productNotes" placeholder="ملاحظات المنتج">
+            
+            <button type="submit">إضافة المنتج</button>
+        </form>
+    </div>
+
+    <div id="invoiceDataDisplay" style="margin-top: 20px; text-align: right;">
+        <h3>بيانات الفاتورة</h3>
+        <pre id="invoiceDetailsText" style="background-color: #f4f4f4; padding: 10px; border-radius: 5px;"></pre>
+    </div>
+
+    <div id="invoiceDetailsModal" class="modal">
+        <pre id="invoiceDetailsText" style="background-color: #f4f4f4; padding: 10px; border-radius: 5px;"></pre>
+    </div>
+
     <script>
         // دالة لحساب إجمالي المشتريات بناءً على الشهر المحدد
         function calculateTotalPurchases() {
@@ -82,8 +280,145 @@
             document.getElementById('totalPurchases').innerText = `إجمالي المشتريات: ${total} ريال`;
         }
 
-        // استدعاء دالة حساب إجمالي المشتريات عند تحميل الصفحة
-        window.onload = calculateTotalPurchases;
+        // دالة لملء قائمة عناوين الفواتير
+        function populateInvoiceTitles() {
+            const invoiceTitleSelect = document.getElementById('invoiceTitleSelect');
+            
+            // مسح الخيارات الحالية
+            invoiceTitleSelect.innerHTML = '<option value="">اختر عنوان الفاتورة</option>';
+            
+            // محاولة جلب عناوين الفواتير من صفحة عرض الفواتير
+            const invoiceTitles = window.opener && window.opener.getInvoiceTitles ? 
+                window.opener.getInvoiceTitles() : 
+                JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            
+            // إضافة عناوين الفواتير كخيارات
+            invoiceTitles.forEach((invoice, index) => {
+                const option = document.createElement('option');
+                option.value = invoice.invoiceNumber || invoice.title || `فاتورة ${index + 1}`;
+                option.textContent = invoice.invoiceNumber ? 
+                    `رقم ${invoice.invoiceNumber} - ${invoice.title || 'بدون عنوان'}` : 
+                    `فاتورة ${index + 1}`;
+                invoiceTitleSelect.appendChild(option);
+            });
+        }
+
+        // دالة لإضافة منتج سريع مع ملاحظات
+        function addQuickProduct(event) {
+            event.preventDefault();
+            
+            const invoiceTitle = document.getElementById('invoiceTitleSelect').value;
+            const productName = document.getElementById('productName').value;
+            const productPrice = parseFloat(document.getElementById('productPrice').value);
+            const productNotes = document.getElementById('productNotes').value;
+            const selectedBank = document.getElementById('bankSelect').value;
+            
+            if (!invoiceTitle) {
+                alert('يرجى اختيار عنوان الفاتورة');
+                return;
+            }
+            
+            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            
+            // البحث عن الفاتورة بالعنوان
+            const invoiceIndex = purchaseInvoices.findIndex(inv => 
+                inv.invoiceNumber === invoiceTitle || 
+                (!inv.invoiceNumber && invoiceTitle === `فاتورة ${purchaseInvoices.indexOf(inv) + 1}`)
+            );
+            
+            if (invoiceIndex === -1) {
+                alert('لم يتم العثور على الفاتورة');
+                return;
+            }
+            
+            if (!purchaseInvoices[invoiceIndex].products) {
+                purchaseInvoices[invoiceIndex].products = [];
+            }
+            
+            purchaseInvoices[invoiceIndex].products.push({
+                name: productName,
+                price: productPrice,
+                notes: productNotes,
+                bank: selectedBank,
+                totalPrice: productPrice
+            });
+            
+            // تحديث إجمالي سعر الفاتورة
+            purchaseInvoices[invoiceIndex].totalPrice = purchaseInvoices[invoiceIndex].products.reduce(
+                (total, product) => total + product.totalPrice, 0
+            );
+            
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+            
+            // مسح حقول الإدخال
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productNotes').value = '';
+            document.getElementById('bankSelect').value = '';
+            
+            alert('تمت إضافة المنتج بنجاح');
+            
+            // إعادة حساب إجمالي المشتريات وعرض تفاصيل الفاتورة
+            calculateTotalPurchases();
+            displayInvoiceDetails();
+        }
+
+        // دالة لعرض تفاصيل الفاتورة
+        function displayInvoiceDetails() {
+            const invoiceNumber = document.getElementById('invoiceTitleSelect').value;
+            const invoiceDetailsText = document.getElementById('invoiceDetailsText');
+            
+            if (!invoiceNumber) {
+                invoiceDetailsText.textContent = 'لم يتم اختيار فاتورة';
+                return;
+            }
+            
+            const purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+            
+            // البحث عن الفاتورة برقمها
+            const selectedInvoice = purchaseInvoices.find(inv => 
+                inv.invoiceNumber === invoiceNumber || 
+                (!inv.invoiceNumber && invoiceNumber === `فاتورة ${purchaseInvoices.indexOf(inv) + 1}`)
+            );
+            
+            if (!selectedInvoice) {
+                invoiceDetailsText.textContent = 'لم يتم العثور على الفاتورة';
+                return;
+            }
+            
+            // عرض تفاصيل الفاتورة
+            let detailsText = `رقم الفاتورة: ${selectedInvoice.invoiceNumber || 'غير محدد'}\n`;
+            detailsText += `العنوان: ${selectedInvoice.invoiceTitle || 'غير محدد'}\n`;
+            detailsText += `التاريخ: ${selectedInvoice.date || 'غير محدد'}\n`;
+            detailsText += `المورد: ${selectedInvoice.supplier || 'غير محدد'}\n`;
+            detailsText += `إجمالي السعر: ${selectedInvoice.totalPrice || 0} ريال\n\n`;
+            
+            // عرض المنتجات الحالية
+            if (selectedInvoice.products && selectedInvoice.products.length > 0) {
+                detailsText += 'المنتجات الحالية:\n';
+                selectedInvoice.products.forEach((product, index) => {
+                    detailsText += `${index + 1}. ${product.name} - السعر: ${product.price} ريال\n`;
+                    if (product.notes) detailsText += `   الأسماء: ${product.notes}\n`;
+                    if (product.bank) detailsText += `   البنك: ${product.bank}\n`;
+                });
+            } else {
+                detailsText += 'لا توجد منتجات في هذه الفاتورة';
+            }
+            
+            invoiceDetailsText.textContent = detailsText;
+        }
+
+        // استدعاء دوال التهيئة عند تحميل الصفحة
+        window.onload = function() {
+            calculateTotalPurchases();
+            populateInvoiceTitles();
+            
+            // إضافة حدث الإرسال للنموذج
+            document.getElementById('quickProductForm').addEventListener('submit', addQuickProduct);
+            
+            // إضافة حدث تغيير للفاتورة لعرض التفاصيل
+            document.getElementById('invoiceTitleSelect').addEventListener('change', displayInvoiceDetails);
+        };
     </script>
 </body>
 </html>
